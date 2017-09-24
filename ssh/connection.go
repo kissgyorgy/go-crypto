@@ -41,6 +41,9 @@ type ConnMetadata interface {
 
 	// LocalAddr returns the local address for this connection.
 	LocalAddr() net.Addr
+
+	// Send SSH_MSG_USERAUTH_BANNER
+	SendBanner(banner string)
 }
 
 // Conn represents an SSH connection for both server and client roles.
@@ -140,4 +143,8 @@ func (c *sshConn) ClientVersion() []byte {
 
 func (c *sshConn) ServerVersion() []byte {
 	return dup(c.serverVersion)
+}
+
+func (c *connection) SendBanner(message string) {
+	c.transport.writePacket(Marshal(userAuthBannerMsg{message, ""}))
 }
